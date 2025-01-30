@@ -121,7 +121,7 @@ class ResidualModelFramePushOffTpl
   /**
    * @brief Return the maximal distance to be enforced
    */
-  pinocchio::FrameIndex get_dist() const;
+  pinocchio::FrameIndex get_distance() const;
 
   /**
    * @brief Modify the reference frame id
@@ -136,7 +136,7 @@ class ResidualModelFramePushOffTpl
   /**
    * @brief Modify the distance to be enforced
    */
-  void set_id(const pinocchio::FrameIndex id);
+  void set_distance(const pinocchio::FrameIndex dist);
 
   /**
    * @brief Print relevant information of the frame-translation residual
