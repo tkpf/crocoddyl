@@ -192,6 +192,6 @@ struct ResidualDataFrameXAxisOrientationTpl : public ResidualDataAbstractTpl<_Sc
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
-#include "crocoddyl/multibody/residuals/frame-rotation.hxx"
+#include "crocoddyl/multibody/residuals/frame-xaxis-orientation.hxx"
 
 #endif  // CROCODDYL_MULTIBODY_RESIDUALS_FRAME_ROTATION_HPP_
