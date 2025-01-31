@@ -100,7 +100,7 @@ ResidualModelFramePushOffTpl<Scalar>::get_reference() const {
 }
 
 template <typename Scalar>
-pinocchio::FrameIndex<Scalar>::get_distance() const {
+pinocchio::FrameIndex<Scalar> ResidualModelFramePushOffTpl::get_distance() const {
   return dist_;
 }
 
