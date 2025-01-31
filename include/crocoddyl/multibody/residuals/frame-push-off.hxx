@@ -15,7 +15,7 @@ namespace crocoddyl {
 template <typename Scalar>
 ResidualModelFramePushOffTpl<Scalar>::ResidualModelFramePushOffTpl(
     boost::shared_ptr<StateMultibody> state, const pinocchio::FrameIndex id,
-    const Vector3s& xref, const std::size_t nu)
+    const Vector3s& xref, const Scalar dist, const std::size_t nu)
     : Base(state, 3, nu, true, false, false),
       id_(id),
       xref_(xref),
@@ -31,7 +31,7 @@ ResidualModelFramePushOffTpl<Scalar>::ResidualModelFramePushOffTpl(
 template <typename Scalar>
 ResidualModelFramePushOffTpl<Scalar>::ResidualModelFramePushOffTpl(
     boost::shared_ptr<StateMultibody> state, const pinocchio::FrameIndex id,
-    const Vector3s& xref)
+    const Vector3s& xref, const Scalar dist)
     : Base(state, 3, true, false, false),
       id_(id),
       xref_(xref),
@@ -100,7 +100,7 @@ ResidualModelFramePushOffTpl<Scalar>::get_reference() const {
 }
 
 template <typename Scalar>
-pinocchio::FrameIndex <Scalar>::get_distance() const {
+pinocchio::FrameIndex<Scalar>::get_distance() const {
   return dist_;
 }
 
