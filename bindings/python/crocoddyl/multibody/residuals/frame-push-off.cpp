@@ -95,7 +95,6 @@ void exposeResidualFramePushOff() {
                             bp::return_internal_reference<>()),
           &ResidualModelFramePushOff::set_reference,
           "minimal distance to be enforced")
-       )
       .def(CopyableVisitor<ResidualModelFramePushOff>());
 
   bp::register_ptr_to_python<

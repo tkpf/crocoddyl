@@ -60,7 +60,7 @@ class ResidualModelFramePushOffTpl
    * @param[in] nu     Dimension of the control vector
    */
   ResidualModelFramePushOffTpl(boost::shared_ptr<StateMultibody> state,
-                                   const pinocchio::FrameIndex, // TODO is there something wrong?
+                                   const pinocchio::FrameIndex id, // TODO is there something wrong?
                                    const Vector3s& xref, const Scalar dist, 
                                    const std::size_t nu);
 
