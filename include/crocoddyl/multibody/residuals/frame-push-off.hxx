@@ -54,7 +54,7 @@ void ResidualModelFramePushOffTpl<Scalar>::calc(
   // Compute the frame translation w.r.t. the reference frame
   Data* d = static_cast<Data*>(data.get());
   pinocchio::updateFramePlacement(*pin_model_.get(), *d->pinocchio, id_);
-  data->r = dist_ - (d->pinocchio->oMf[id_].translation() - xref_);
+  data->r = dist_ * Eigen::Vector3d::Ones() - (d->pinocchio->oMf[id_].translation() - xref_);
 }
 
 template <typename Scalar>
@@ -100,7 +100,7 @@ ResidualModelFramePushOffTpl<Scalar>::get_reference() const {
 }
 
 template <typename Scalar>
-pinocchio::FrameIndex<Scalar> ResidualModelFramePushOffTpl::get_distance() const {
+pinocchio::FrameIndex ResidualModelFramePushOffTpl<Scalar>::get_distance() const {
   return dist_;
 }
 

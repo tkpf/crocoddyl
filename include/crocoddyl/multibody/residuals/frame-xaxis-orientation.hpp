@@ -4,8 +4,8 @@
 // tkpf
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef CROCODDYL_MULTIBODY_RESIDUALS_FRAME_ROTATION_HPP_
-#define CROCODDYL_MULTIBODY_RESIDUALS_FRAME_ROTATION_HPP_
+#ifndef CROCODDYL_MULTIBODY_RESIDUALS_FRAME_XAXIS_ORIENTATION_HPP_
+#define CROCODDYL_MULTIBODY_RESIDUALS_FRAME_XAXIS_ORIENTATION_HPP_
 
 #include <pinocchio/multibody/fwd.hpp>
 
@@ -194,4 +194,4 @@ struct ResidualDataFrameXAxisOrientationTpl : public ResidualDataAbstractTpl<_Sc
 /* --- Details -------------------------------------------------------------- */
 #include "crocoddyl/multibody/residuals/frame-xaxis-orientation.hxx"
 
-#endif  // CROCODDYL_MULTIBODY_RESIDUALS_FRAME_ROTATION_HPP_
+#endif  // CROCODDYL_MULTIBODY_RESIDUALS_FRAME_XAXIS_ORIENTATION_HPP_

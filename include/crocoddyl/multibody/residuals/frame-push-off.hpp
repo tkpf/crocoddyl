@@ -6,8 +6,8 @@
 // All rights reserved.
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef CROCODDYL_MULTIBODY_RESIDUALS_FRAME_TRANSLATION_HPP_
-#define CROCODDYL_MULTIBODY_RESIDUALS_FRAME_TRANSLATION_HPP_
+#ifndef CROCODDYL_MULTIBODY_RESIDUALS_FRAME_PUSH_OFF_HPP_
+#define CROCODDYL_MULTIBODY_RESIDUALS_FRAME_PUSH_OFF_HPP_
 
 #include <pinocchio/multibody/fwd.hpp>
 
@@ -204,4 +204,4 @@ struct ResidualDataFramePushOffTpl
 /* --- Details -------------------------------------------------------------- */
 #include "crocoddyl/multibody/residuals/frame-push-off.hxx"
 
-#endif  // CROCODDYL_MULTIBODY_RESIDUALS_FRAME_TRANSLATION_HPP_
+#endif  // CROCODDYL_MULTIBODY_RESIDUALS_FRAME_PUSH_OFF_HPP_

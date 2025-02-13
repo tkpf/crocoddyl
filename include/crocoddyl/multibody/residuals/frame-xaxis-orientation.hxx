@@ -66,13 +66,12 @@ void ResidualModelFrameXAxisOrientationTpl<Scalar>::calc(
   Eigen::Quaterniond q_rRf;
   rRf.noalias() = oRf_inv_ * d->pinocchio->oMf[id_].rotation();
   q_rRf = Eigen::Quaterniond(rRf);
-  q_rRf.y() = 0
-  q_rRf.z() = 0
-  q_rRf.normalize()
+  q_rRf.x() = 0;
+  q_rRf.normalize();
   // d->x_aligned_rRf.noalias() = q_rRf.toRotationMatrix()
-  d->rRf.noalias() = q_rRf.toRotationMatrix()   // TODO rename?   // TODO we need to adapt residualdata in frame-axis-orientation.hpp
+  d->rRf.noalias() = q_rRf.toRotationMatrix();   // TODO rename?   // TODO we need to adapt residualdata in frame-axis-orientation.hpp
 
-  data->r = pinocchio::log3(d->x_aligned_rRf);
+  data->r = pinocchio::log3(d->rRf);
 }
 
 template <typename Scalar>
