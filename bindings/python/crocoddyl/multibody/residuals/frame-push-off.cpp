@@ -24,7 +24,7 @@ void exposeResidualFramePushOff() {
       "r = dist - (t - tref), with t and tref as the\n"
       "current and reference frame translations, respectively.",
       bp::init<boost::shared_ptr<StateMultibody>, pinocchio::FrameIndex,
-               Eigen::Vector3d, std::size_t>(
+               Eigen::Vector3d, pinocchio::context::Scalar, std::size_t>(
           bp::args("self", "state", "id", "xref", "dist", "nu"),
           "Initialize the frame translation residual model.\n\n"
           ":param state: state of the multibody system\n"
@@ -33,7 +33,7 @@ void exposeResidualFramePushOff() {
           ":param dist: minimal distance to be enforced\n"
           ":param nu: dimension of control vector"))
       .def(bp::init<boost::shared_ptr<StateMultibody>, pinocchio::FrameIndex,
-                    Eigen::Vector3d>(
+                    Eigen::Vector3d, pinocchio::context::Scalar>(
           bp::args("self", "state", "id", "xref", "dist"),
           "Initialize the frame translation residual model.\n\n"
           "The default nu is obtained from state.nv.\n"
@@ -91,9 +91,8 @@ void exposeResidualFramePushOff() {
           "reference frame translation")
        .add_property(
           "distance",
-          bp::make_function(&ResidualModelFramePushOff::get_distance,
-                            bp::return_internal_reference<>()),
-          &ResidualModelFramePushOff::set_reference,
+          &ResidualModelFramePushOff::get_distance,
+          &ResidualModelFramePushOff::set_distance,
           "minimal distance to be enforced")
       .def(CopyableVisitor<ResidualModelFramePushOff>());
 
