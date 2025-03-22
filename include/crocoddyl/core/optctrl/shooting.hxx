@@ -345,6 +345,14 @@ void ShootingProblemTpl<Scalar>::circularAppend(
 }
 
 template <typename Scalar>
+void ShootingProblemTpl<Scalar>::shrink(
+    const VectorXs& x0) {
+  running_models_.erase(running_models_.begin());
+  running_datas_.erase(running_datas_.begin());
+  set_x0(x0);
+}
+
+template <typename Scalar>
 void ShootingProblemTpl<Scalar>::updateNode(
     const std::size_t i, boost::shared_ptr<ActionModelAbstract> model,
     boost::shared_ptr<ActionDataAbstract> data) {

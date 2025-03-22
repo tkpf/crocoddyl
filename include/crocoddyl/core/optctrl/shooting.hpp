@@ -174,6 +174,12 @@ class ShootingProblemTpl {
   void circularAppend(boost::shared_ptr<ActionModelAbstract> model);
 
   /**
+   * @brief Shrink the problem to support Shrinking Horizon MPC. Erases first running node.
+   *
+   */
+  void shrink(const VectorXs& x0);
+
+  /**
    * @brief Update the model and data for a specific node
    *
    * @param[in] i      node index \f$(0\leq i \lt T+1)\f$
