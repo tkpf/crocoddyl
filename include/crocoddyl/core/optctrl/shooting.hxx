@@ -350,6 +350,7 @@ void ShootingProblemTpl<Scalar>::shrink(
   running_models_.erase(running_models_.begin());
   running_datas_.erase(running_datas_.begin());
   set_x0(x0);
+  T_ = T_ - 1;
 }
 
 template <typename Scalar>

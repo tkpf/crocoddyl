@@ -70,7 +70,7 @@ class SolverSHFDDP : public SolverSHDDP {
   virtual bool solve(
       const std::vector<Eigen::VectorXd>& init_xs,
       const std::vector<Eigen::VectorXd>& init_us,
-      const std::size_t maxiter = 100, const bool is_feasible,
+      const std::size_t maxiter, const bool is_feasible,
       const double init_reg);
   virtual bool solve(
       const std::vector<Eigen::VectorXd>& init_xs,
