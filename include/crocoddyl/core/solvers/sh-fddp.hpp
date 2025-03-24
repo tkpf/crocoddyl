@@ -68,10 +68,10 @@ class SolverSHFDDP : public SolverSHDDP {
   virtual ~SolverSHFDDP();
 
   virtual bool solve(
-      const std::vector<Eigen::VectorXd>& init_xs = DEFAULT_VECTOR,
-      const std::vector<Eigen::VectorXd>& init_us = DEFAULT_VECTOR,
-      const std::size_t maxiter = 100, const bool is_feasible = false,
-      const double init_reg = NAN);
+      const std::vector<Eigen::VectorXd>& init_xs,
+      const std::vector<Eigen::VectorXd>& init_us,
+      const std::size_t maxiter = 100, const bool is_feasible,
+      const double init_reg);
   virtual bool solve(
       const std::vector<Eigen::VectorXd>& init_xs,
       const std::vector<Eigen::VectorXd>& init_us,
