@@ -69,14 +69,14 @@ void SolverSHBoxFDDP::allocateData() {
 }
 
 // method to perform shrinking horizon MPC
-void SolverSHBoxFDDP::shrinkData() {
+void SolverSHBoxFDDP::shrinkData(const std::size_t n) {
   START_PROFILER("SolverSHBoxFDDP::shrinkData");
   // erase first elements
-  SolverSHFDDP::shrinkData();
+  SolverSHFDDP::shrinkData(n);
   
-  Quu_inv_.erase(Quu_inv_.begin());
-  du_lb_.erase(du_lb_.begin());
-  du_ub_.erase(du_ub_.begin());
+  Quu_inv_.erase(Quu_inv_.begin(), Quu_inv_.begin()+n);
+  du_lb_.erase(du_lb_.begin(), du_lb_.begin()+n);
+  du_ub_.erase(du_ub_.begin(), du_ub_.begin()+n);
   STOP_PROFILER("SolverSHBoxFDDP::shrinkData");
 }
 

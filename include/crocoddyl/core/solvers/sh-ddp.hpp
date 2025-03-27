@@ -81,6 +81,7 @@ class SolverSHDDP : public SolverAbstract {
       const std::vector<Eigen::VectorXd>& init_xs,
       const std::vector<Eigen::VectorXd>& init_us,
       const std::size_t maxiter, const bool is_feasible);
+  virtual bool solve(const std::size_t maxiter);
 
 
   virtual void computeDirection(const bool recalc = true);
@@ -209,7 +210,7 @@ class SolverSHDDP : public SolverAbstract {
   /**
    * @brief Shrink the data vectors to support shrinking horizon MPC
    */
-  virtual void shrinkData();
+  virtual void shrinkData(const std::size_t n=1);
 
   /**
    * @brief Return the regularization factor used to increase the damping value

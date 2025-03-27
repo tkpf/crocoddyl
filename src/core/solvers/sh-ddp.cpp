@@ -55,6 +55,10 @@ bool SolverSHDDP::solve(const std::vector<Eigen::VectorXd>& init_xs,
     return solve(init_xs, init_us, maxiter, is_feasible, preg_, dreg_); // if solver has not run yet, preg_, dreg_ will default to 0. in SolverAbstract constructor
   }
 
+bool SolverSHDDP::solve(const std::size_t maxiter) {
+    return solve(xs_, us_, maxiter, is_feasible_, preg_, dreg_); // if solver has not run yet, preg_, dreg_ will default to 0. in SolverAbstract constructor
+  }
+
 bool SolverSHDDP::solve(const std::vector<Eigen::VectorXd>& init_xs,
                       const std::vector<Eigen::VectorXd>& init_us,
                       const std::size_t maxiter, const bool is_feasible,
@@ -491,27 +495,35 @@ void SolverSHDDP::allocateData() {
 }
 
 // method to perform shrinking horizon MPC
-void SolverSHDDP::shrinkData() {
+void SolverSHDDP::shrinkData(const std::size_t n) {
+  // TODO check validity of n, should not exceed current problem size
   START_PROFILER("SolverSHDDP::shrinkData");
-  problem_->shrink(xs_try_[1]);
+  problem_->shrink(xs_try_[n], n);
   // erase first elements
-  Vxx_.erase(Vxx_.begin());
-  Vx_.erase(Vx_.begin());
-  Qxx_.erase(Qxx_.begin());
-  Qxu_.erase(Qxu_.begin());
-  Quu_.erase(Quu_.begin());
-  Qx_.erase(Qx_.begin());
-  Qu_.erase(Qu_.begin());
-  K_.erase(K_.begin());
-  k_.erase(k_.begin());
+  Vxx_.erase(Vxx_.begin(), Vxx_.begin()+n);
+  Vx_.erase(Vx_.begin(), Vx_.begin()+n);
+  Qxx_.erase(Qxx_.begin(), Qxx_.begin()+n);
+  Qxu_.erase(Qxu_.begin(), Qxu_.begin()+n);
+  Quu_.erase(Quu_.begin(), Quu_.begin()+n);
+  Qx_.erase(Qx_.begin(), Qx_.begin()+n);
+  Qu_.erase(Qu_.begin(), Qu_.begin()+n);
+  K_.erase(K_.begin(), K_.begin()+n);
+  k_.erase(k_.begin(), k_.begin()+n);
 
-  xs_try_.erase(xs_try_.begin());
-  us_try_.erase(us_try_.begin());
-  dx_.erase(dx_.begin());
+  xs_try_.erase(xs_try_.begin(), xs_try_.begin()+n);
+  us_try_.erase(us_try_.begin(), us_try_.begin()+n);
+  dx_.erase(dx_.begin(), dx_.begin()+n);
 
-  FuTVxx_p_.erase(FuTVxx_p_.begin());
-  Quu_llt_.erase(Quu_llt_.begin());
-  Quuk_.erase(Quuk_.begin());
+  FuTVxx_p_.erase(FuTVxx_p_.begin(), FuTVxx_p_.begin()+n);
+  Quu_llt_.erase(Quu_llt_.begin(), Quu_llt_.begin()+n);
+  Quuk_.erase(Quuk_.begin(), Quuk_.begin()+n);
+
+  // also shrink us_, xs_, feas_ (solver base)
+  xs_.erase(xs_.begin(), xs_.begin()+n);
+  us_.erase(us_.begin(), us_.begin()+n);
+  fs_.erase(fs_.begin(), fs_.begin()+n);
+  g_adj_.erase(g_adj_.begin(), g_adj_.begin()+n);
+
   START_PROFILER("SolverSHDDP::shrinkData");
 }
 

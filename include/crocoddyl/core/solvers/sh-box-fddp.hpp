@@ -25,7 +25,7 @@ class SolverSHBoxFDDP : public SolverSHFDDP {
   virtual ~SolverSHBoxFDDP();
 
   virtual void allocateData();
-  virtual void shrinkData();
+  virtual void shrinkData(const std::size_t n=1);
   virtual void computeGains(const std::size_t t);
   virtual void forwardPass(const double steplength);
   virtual void resizeData();

@@ -34,6 +34,10 @@ bool SolverSHFDDP::solve(const std::vector<Eigen::VectorXd>& init_xs,
     return solve(init_xs, init_us, maxiter, is_feasible, preg_, dreg_); // if solver has not run yet, preg_, dreg_ will default to 0. in SolverAbstract constructor
   }
 
+bool SolverSHFDDP::solve(const std::size_t maxiter) {
+    return solve(xs_, us_, maxiter, is_feasible_, preg_, dreg_); // if solver has not run yet, preg_, dreg_ will default to 0. in SolverAbstract constructor
+  }
+
 bool SolverSHFDDP::solve(const std::vector<Eigen::VectorXd>& init_xs,
                        const std::vector<Eigen::VectorXd>& init_us,
                        const std::size_t maxiter, const bool is_feasible,

@@ -346,11 +346,11 @@ void ShootingProblemTpl<Scalar>::circularAppend(
 
 template <typename Scalar>
 void ShootingProblemTpl<Scalar>::shrink(
-    const VectorXs& x0) {
-  running_models_.erase(running_models_.begin());
-  running_datas_.erase(running_datas_.begin());
+    const VectorXs& x0, const std::size_t n) {
+  running_models_.erase(running_models_.begin(), running_models_.begin()+n);
+  running_datas_.erase(running_datas_.begin(), running_datas_.begin()+n);
   set_x0(x0);
-  T_ = T_ - 1;
+  T_ = T_ - n;
 }
 
 template <typename Scalar>

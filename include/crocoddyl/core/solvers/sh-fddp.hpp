@@ -67,20 +67,21 @@ class SolverSHFDDP : public SolverSHDDP {
   explicit SolverSHFDDP(boost::shared_ptr<ShootingProblem> problem);
   virtual ~SolverSHFDDP();
 
-  virtual bool solve(
+  virtual bool solve( // inherited by SHDDP
       const std::vector<Eigen::VectorXd>& init_xs,
       const std::vector<Eigen::VectorXd>& init_us,
       const std::size_t maxiter, const bool is_feasible,
       const double init_reg);
-  virtual bool solve(
+  virtual bool solve( 
       const std::vector<Eigen::VectorXd>& init_xs,
       const std::vector<Eigen::VectorXd>& init_us,
       const std::size_t maxiter, const bool is_feasible,
       const double init_preg, const double init_dreg);
-  virtual bool solve(
+  virtual bool solve( // inherited by SHDDP
       const std::vector<Eigen::VectorXd>& init_xs,
       const std::vector<Eigen::VectorXd>& init_us,
       const std::size_t maxiter, const bool is_feasible);
+  virtual bool solve(const std::size_t maxiter); // inherited by SHDDP
 
   /**
    * @copybrief SolverAbstract::expectedImprovement
