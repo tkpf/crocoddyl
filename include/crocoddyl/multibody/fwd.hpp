@@ -149,11 +149,6 @@ struct ResidualDataStateTpl;
 
 // custom residuals
 template <typename Scalar>
-class ResidualModelFramePushOffTpl;
-template <typename Scalar>
-struct ResidualDataFramePushOffTpl;
-
-template <typename Scalar>
 class ResidualModelFrameXAxisOrientationTpl;
 template <typename Scalar>
 struct ResidualDataFrameXAxisOrientationTpl;
@@ -339,8 +334,6 @@ typedef ResidualDataImpulseCoMTpl<double> ResidualDataImpulseCoM;
 typedef ResidualModelStateTpl<double> ResidualModelState;
 typedef ResidualDataStateTpl<double> ResidualDataState;
 // custom
-typedef ResidualModelFramePushOffTpl<double> ResidualModelFramePushOff;
-typedef ResidualDataFramePushOffTpl<double> ResidualDataFramePushOff;
 typedef ResidualModelFrameXAxisOrientationTpl<double> ResidualModelFrameXAxisOrientation;
 typedef ResidualDataFrameXAxisOrientationTpl<double> ResidualDataFrameXAxisOrientation;
 
