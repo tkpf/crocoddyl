@@ -15,7 +15,7 @@ namespace crocoddyl {
 
 template <typename Scalar>
 ResidualModelFrameXAxisOrientationTpl<Scalar>::ResidualModelFrameXAxisOrientationTpl(   // TODO constructor with only x-axis orientation, no need to extract
-    boost::shared_ptr<StateMultibody> state, const pinocchio::FrameIndex id,
+    std::shared_ptr<StateMultibody> state, const pinocchio::FrameIndex id,
     const Matrix3s& Rref, const std::size_t nu)
     : Base(state, 3, nu, true, false, false),
       id_(id),
@@ -32,7 +32,7 @@ ResidualModelFrameXAxisOrientationTpl<Scalar>::ResidualModelFrameXAxisOrientatio
 
 template <typename Scalar>
 ResidualModelFrameXAxisOrientationTpl<Scalar>::ResidualModelFrameXAxisOrientationTpl(
-    boost::shared_ptr<StateMultibody> state, const pinocchio::FrameIndex id,
+    std::shared_ptr<StateMultibody> state, const pinocchio::FrameIndex id,
     const Matrix3s& Rref)
     : Base(state, 3, true, false, false),
       id_(id),
@@ -52,7 +52,7 @@ ResidualModelFrameXAxisOrientationTpl<Scalar>::~ResidualModelFrameXAxisOrientati
 
 template <typename Scalar>
 void ResidualModelFrameXAxisOrientationTpl<Scalar>::calc(
-    const boost::shared_ptr<ResidualDataAbstract>& data,
+    const std::shared_ptr<ResidualDataAbstract>& data,
     const Eigen::Ref<const VectorXs>&, const Eigen::Ref<const VectorXs>&) {
   Data* d = static_cast<Data*>(data.get());
 
@@ -76,7 +76,7 @@ void ResidualModelFrameXAxisOrientationTpl<Scalar>::calc(
 
 template <typename Scalar>
 void ResidualModelFrameXAxisOrientationTpl<Scalar>::calcDiff(
-    const boost::shared_ptr<ResidualDataAbstract>& data,
+    const std::shared_ptr<ResidualDataAbstract>& data,
     const Eigen::Ref<const VectorXs>&, const Eigen::Ref<const VectorXs>&) {
   Data* d = static_cast<Data*>(data.get());
 
@@ -91,7 +91,7 @@ void ResidualModelFrameXAxisOrientationTpl<Scalar>::calcDiff(
 }
 
 template <typename Scalar>
-boost::shared_ptr<ResidualDataAbstractTpl<Scalar> >
+std::shared_ptr<ResidualDataAbstractTpl<Scalar> >
 ResidualModelFrameXAxisOrientationTpl<Scalar>::createData(
     DataCollectorAbstract* const data) {
   return boost::allocate_shared<Data>(Eigen::aligned_allocator<Data>(), this,
