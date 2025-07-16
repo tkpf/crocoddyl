@@ -6,9 +6,10 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 import pinocchio
+from pinocchio.visualize import MeshcatVisualizer
 
-from .libcrocoddyl_pywrap import *  # noqa: F403
-from .libcrocoddyl_pywrap import __raw_version__, __version__  # noqa: F401
+from .libcrocoddyl_pywrap_float64 import *  # noqa: F403
+from .libcrocoddyl_pywrap_float64 import __raw_version__, __version__  # noqa: F401
 
 
 def rotationMatrixFromTwoVectors(a, b):
@@ -129,7 +130,7 @@ class DisplayAbstract(ABC):
                     thrusters.append(model.differential.actuation.thrusters)
         for n in frameNames:
             frameId = self.robot.model.getFrameId(n)
-            parentId = self.robot.model.frames[frameId].parent
+            parentId = self.robot.model.frames[frameId].parentJoint
             self.activeContacts[str(parentId)] = True
             self.frictionMu[str(parentId)] = 0.7
             self.frameTrajNames.append(str(frameId))
@@ -293,7 +294,7 @@ class DisplayAbstract(ABC):
                 DifferentialActionDataContactFwdDynamics,
             ) or isinstance(
                 data.differential,
-                DifferentialActionDataContactInvDynamics,
+                DifferentialActionModelContactInvDynamics.DifferentialActionDataContactInvDynamics,
             ):
                 return True
         elif isinstance(data, ActionDataImpulseFwdDynamics):
@@ -306,7 +307,7 @@ class DisplayAbstract(ABC):
                 DifferentialActionDataContactFwdDynamics,
             ) or isinstance(
                 data.differential,
-                DifferentialActionDataContactInvDynamics,
+                DifferentialActionModelContactInvDynamics.DifferentialActionDataContactInvDynamics,
             ):
                 return (
                     model.differential.contacts.contacts,
@@ -319,7 +320,7 @@ class DisplayAbstract(ABC):
                 )
                 or isinstance(
                     data.differential,
-                    DifferentialActionDataContactInvDynamics,
+                    DifferentialActionModelContactInvDynamics.DifferentialActionDataContactInvDynamics,
                 )
             ):
                 return (
@@ -339,7 +340,7 @@ class DisplayAbstract(ABC):
         fc = []
         for key, contact in contact_data.todict().items():
             if contact_model[key].active:
-                joint = state.pinocchio.frames[contact.frame].parent
+                joint = state.pinocchio.frames[contact.frame].parentJoint
                 oMf = contact.pinocchio.oMi[joint] * contact.jMf
                 fiMo = pinocchio.SE3(
                     contact.pinocchio.oMi[joint].rotation.T,
@@ -558,7 +559,7 @@ class MeshcatDisplay(DisplayAbstract):
         if frameNames is not None:
             print("Deprecated. Do not pass frameNames")
         robot.setVisualizer(
-            pinocchio.visualize.MeshcatVisualizer(
+            MeshcatVisualizer(
                 model=self.robot.model,
                 collision_model=self.robot.collision_model,
                 visual_model=self.robot.visual_model,

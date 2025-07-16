@@ -9,8 +9,8 @@ set(${PROJECT_NAME}_EXAMPLES_PYTHON
     quadrupedal_gaits_fwddyn
     quadrupedal_gaits_invdyn
     quadrupedal_walk_ubound
-    bipedal_walk_fwddyn
-    bipedal_walk_invdyn
+    bipedal_gaits_fwddyn
+    bipedal_gaits_invdyn
     bipedal_walk_ubound
     humanoid_manipulation
     humanoid_manipulation_ubound
@@ -23,7 +23,7 @@ foreach(EXAMPLES ${${PROJECT_NAME}_EXAMPLES_PYTHON})
   install(FILES ${EXAMPLES}.py
           DESTINATION ${PYTHON_SITELIB}/${PROJECT_NAME}/examples)
   add_custom_target(
-    "examples-${EXAMPLES}"
+    "example-${EXAMPLES}"
     ${CMAKE_COMMAND}
     -E
     env

@@ -11,9 +11,6 @@
 #ifndef BINDINGS_PYTHON_CROCODDYL_CORE_SOLVER_BASE_HPP_
 #define BINDINGS_PYTHON_CROCODDYL_CORE_SOLVER_BASE_HPP_
 
-#include <memory>
-#include <vector>
-
 #include "crocoddyl/core/solver-base.hpp"
 #include "python/crocoddyl/core/core.hpp"
 
@@ -46,7 +43,7 @@ class SolverAbstract_wrap : public SolverAbstract,
   using SolverAbstract::us_;
   using SolverAbstract::xs_;
 
-  explicit SolverAbstract_wrap(boost::shared_ptr<ShootingProblem> problem)
+  explicit SolverAbstract_wrap(std::shared_ptr<ShootingProblem> problem)
       : SolverAbstract(problem), bp::wrapper<SolverAbstract>() {}
   ~SolverAbstract_wrap() {}
 

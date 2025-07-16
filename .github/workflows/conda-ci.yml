@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   crocoddyl-conda:
-    name: (${{ matrix.os }}, clang, multi-threading, ipopt, ${{ matrix.build_type }})
+    name: (${{ matrix.os }}, ${{ matrix.compiler }}, codegen ${{ matrix.codegen_support }}, multi-threading, ipopt, ${{ matrix.build_type }})
     runs-on: ${{ matrix.os }}
     env:
       CCACHE_BASEDIR: "${GITHUB_WORKSPACE}"
@@ -41,15 +41,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # os: ["ubuntu-latest", "macos-latest"]
-        os: ["macos-latest"]
-        build_type: [Release, Debug]
-        python-version: ["3.8", "3.12"]
-        compiler: [clang]
-
         include:
-          # - os: ubuntu-latest
+          - os: ubuntu-latest
+            compiler: gcc
+            build_type: Release
+            codegen_support: ON
+          - os: ubuntu-latest
+            compiler: gcc
+            build_type: Debug
+            codegen_support: OFF
           - os: macos-latest
+            compiler: clang
+            build_type: Release
+            codegen_support: ON
+          - os: macos-latest
+            compiler: clang
+            build_type: Debug
+            codegen_support: OFF
 
     steps:
     - uses: actions/checkout@v4
@@ -59,7 +67,7 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ${{ env.CCACHE_DIR }}
-        key: ccache-conda-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.python-version }}-${{ github.sha }}
+        key: ccache-conda-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.python-version }}-${{ github.run_id }}
         restore-keys: ccache-conda-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.python-version }}-
 
     - uses: conda-incubator/setup-miniconda@v3
@@ -76,6 +84,7 @@ jobs:
         conda activate crocoddyl
         conda install cmake ccache -c conda-forge
         conda install llvm-openmp libcxx -c conda-forge
+        conda install ffmpeg -c conda-forge
         conda list
 
     - name: Install example-robot-data
@@ -88,40 +97,22 @@ jobs:
         cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX
         make install
 
-    - name: Install compilers for macOS
-      shell: bash -l {0}
-      if: contains(matrix.os, 'macos-latest')
-      run: |
-        conda install compilers -c conda-forge
-
-    - name: Enable CppADCodeGen compilation
-      shell: bash -l {0}
-      if: contains(matrix.build_type, 'Release')
-      run: |
-        echo "codegen_support=ON" >> "$GITHUB_ENV"
-
-    - name: Disable CppADCodeGen compilation
-      shell: bash -l {0}
-      if: contains(matrix.build_type, 'Debug')
-      run: |
-        echo "codegen_support=OFF" >> "$GITHUB_ENV"
-
     - name: Build Crocoddyl
       shell: bash -l {0}
       run: |
         conda activate crocoddyl
         echo $CONDA_PREFIX
-
         mkdir build
         cd build
-
         cmake .. \
-          -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+          -DCMAKE_CXX_FLAGS_DEBUG="" \
           -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-          -DBUILD_WITH_CODEGEN_SUPPORT=${{ env.codegen_support }} -DPYTHON_EXECUTABLE=$(which python3) \
+          -DBUILD_WITH_CODEGEN_SUPPORT=${{ matrix.codegen_support }} -DPYTHON_EXECUTABLE=$(which python3) \
           -DBUILD_WITH_MULTITHREADS=ON -DINSTALL_DOCUMENTATION=ON -DGENERATE_PYTHON_STUBS=ON \
           -DOpenMP_ROOT=$CONDA_PREFIX
         make
+        make VERBOSE=1
 
     - name: Run unit tests
       shell: bash -l {0}
@@ -129,7 +120,7 @@ jobs:
         conda activate crocoddyl
         cd build
         export CTEST_OUTPUT_ON_FAILURE=1
-        make test
+        ctest --output-on-failure
 
     - name:  Install Crocoddyl
       shell: bash -l {0}

@@ -10,9 +10,6 @@
 #ifndef CROCODDYL_CORE_SOLVERS_FDDP_HPP_
 #define CROCODDYL_CORE_SOLVERS_FDDP_HPP_
 
-#include <Eigen/Cholesky>
-#include <vector>
-
 #include "crocoddyl/core/solvers/ddp.hpp"
 
 namespace crocoddyl {
@@ -64,7 +61,7 @@ class SolverFDDP : public SolverDDP {
    *
    * @param[in] problem  shooting problem
    */
-  explicit SolverFDDP(boost::shared_ptr<ShootingProblem> problem);
+  explicit SolverFDDP(std::shared_ptr<ShootingProblem> problem);
   virtual ~SolverFDDP();
 
   virtual bool solve(

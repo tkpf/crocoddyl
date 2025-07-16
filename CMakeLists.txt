@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22)
+message(STATUS "CMake version: ${CMAKE_VERSION}")
+if(CMAKE_VERSION VERSION_GREATER "3.12")
+  cmake_policy(SET CMP0074 NEW)
+endif()
 
 # Set up project properties
 set(PROJECT_NAMESPACE loco-3d)
@@ -8,13 +12,13 @@ set(PROJECT_DESCRIPTION
 )
 set(PROJECT_URL https://github.com/${PROJECT_NAMESPACE}/${PROJECT_NAME})
 
-option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
+# Set up Crocoddyl's scalar types
+set(SCALAR_TYPES double float)
+set(SCALAR_FPTYPES ${SCALAR_TYPES})
 
 # Check if the submodule cmake have been initialized
 set(JRL_CMAKE_MODULES "${CMAKE_CURRENT_LIST_DIR}/cmake")
-if(EXISTS "${JRL_CMAKE_MODULES}/base.cmake")
-  message(STATUS "JRL cmakemodules found in 'cmake/' git submodule")
-else()
+if(NOT EXISTS "${JRL_CMAKE_MODULES}/base.cmake")
   find_package(jrl-cmakemodules QUIET CONFIG)
   if(jrl-cmakemodules_FOUND)
     get_property(
@@ -41,20 +45,56 @@ else()
   endif()
 endif()
 
+# ----------------------------------------------------
+# CMake Policy setup
+# ----------------------------------------------------
+# Policy can be removed when cmake_minimum_required is updated. We also set
+# CMAKE_POLICY_DEFAULT_CMPXXXX because CMake modules can reset policy and
+# redefine some macros like `find_dependency` that will not use our policy. Use
+# BoostConfig module distributed by boost library instead of using FindBoost
+# module distributed by CMake (to remove in 3.30). This policy is not working
+# when using clang-cl.
+if(NOT WIN32 OR NOT ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+  if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
+    set(CMAKE_POLICY_DEFAULT_CMP0167 NEW)
+  endif()
+endif()
+# install() DESTINATION paths are normalized (to remove in 3.31).
+if(POLICY CMP0177)
+  cmake_policy(SET CMP0177 NEW)
+  set(CMAKE_POLICY_DEFAULT_CMP0177 NEW)
+endif()
+
 # Include important cmake modules
 include("${JRL_CMAKE_MODULES}/base.cmake")
 include("${JRL_CMAKE_MODULES}/boost.cmake")
 include("${JRL_CMAKE_MODULES}/apple.cmake")
 include("${JRL_CMAKE_MODULES}/stubs.cmake")
 include("${JRL_CMAKE_MODULES}/python-helpers.cmake")
+include("crocoddyl.cmake")
 
 # Print initial message
-message(STATUS "${PROJECT_DESCRIPTION}, version ${PROJECT_VERSION}")
 message(
-  STATUS "Copyright (C) 2018-2024 CNRS-LAAS, University of Edinburgh, INRIA")
-message(STATUS "                        Heriot-Watt University")
+  STATUS
+    "============================================================================================="
+)
+message(STATUS "${Bold}${PROJECT_DESCRIPTION}, version ${PROJECT_VERSION}")
+message(STATUS "Copyright (C) 2018-2025, Heriot-Watt University • CNRS-LAAS.")
 message(STATUS "All rights reserved.")
 message(STATUS "Released under the BSD 3-Clause License.")
+message(STATUS "")
+message(STATUS " Maintainers:")
+message(STATUS "   - RoMI Lab @ Heriot-Watt (https://www.romilab.org)")
+message(
+  STATUS
+    "   - Gepetto team @ LAAS-CNRS (https://www.laas.fr/fr/equipes/gepetto/)")
+message(
+  STATUS "   - Willow team @ INRIA (https://www.di.ens.fr/willow/) ${Reset}")
+message(
+  STATUS
+    "============================================================================================="
+)
 
 # Set a default build type to 'Release' if none was specified
 set_default_cmake_build_type("Release")
@@ -74,6 +114,7 @@ option(BUILD_EXAMPLES "Build the examples" ON)
 option(BUILD_WITH_IPOPT "Build the IPOPT wrapper." ON)
 option(GENERATE_PYTHON_STUBS
        "Generate the Python stubs associated to the Python library" OFF)
+option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
 
 if(ENABLE_VECTORIZATION)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
@@ -91,8 +132,8 @@ if(APPLE) # Use the handmade approach
   set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/find-external/OpenMP
                         ${CMAKE_MODULE_PATH})
 elseif(UNIX)
-  if(${CMAKE_VERSION} VERSION_GREATER "3.20.0" OR ${CMAKE_VERSION}
-                                                  VERSION_EQUAL "3.20.0")
+  if(${CMAKE_VERSION} VERSION_GREATER "3.25.0" OR ${CMAKE_VERSION}
+                                                  VERSION_EQUAL "3.25.0")
     set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/find-external/OpenMP
                           ${CMAKE_MODULE_PATH})
   endif()
@@ -103,8 +144,8 @@ if(BUILD_PYTHON_INTERFACE)
   add_project_dependency(eigenpy 3.1.0 REQUIRED PKG_CONFIG_REQUIRES
                          "eigenpy >= 3.1.0")
 endif(BUILD_PYTHON_INTERFACE)
-add_project_dependency(pinocchio 2.6.20 REQUIRED PKG_CONFIG_REQUIRES
-                       "pinocchio >= 2.6.20")
+add_project_dependency(pinocchio 3.1.0 REQUIRED PKG_CONFIG_REQUIRES
+                       "pinocchio >= 3.1.0")
 if(BUILD_EXAMPLES
    OR BUILD_TESTING
    OR BUILD_BENCHMARK)
@@ -155,8 +196,9 @@ endif()
 if(BUILD_WITH_CODEGEN_SUPPORT)
   set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/find-external/CppAD/"
                         ${CMAKE_MODULE_PATH})
-  add_project_dependency(cppad 20200000.0 REQUIRED FIND_EXTERNAL cppad)
+  add_project_dependency(cppad 20200000.0 REQUIRED FIND_EXTERNAL CppAD)
   add_project_dependency(cppadcg 2.4.1 REQUIRED)
+  add_project_dependency(pycppad 1.2.4 REQUIRED)
   add_definitions(-DCROCODDYL_WITH_CODEGEN)
   # Pinocchio codegen related preproccessor defs.
   add_definitions(-DPINOCCHIO_WITH_CPPADCG_SUPPORT)
@@ -171,6 +213,7 @@ if(BUILD_WITH_CODEGEN_SUPPORT)
         "${PACKAGE_EXTRA_MACROS}\nADD_DEFINITIONS(-DPINOCCHIO_CPPAD_REQUIRES_MATRIX_BASE_PLUGIN)"
     )
   endif()
+  list(APPEND SCALAR_TYPES CppAD::AD<CppAD::cg::CG<double>>)
 endif()
 
 # Add OpenMP
@@ -221,6 +264,27 @@ if(NOT BUILD_WITH_IPOPT OR (NOT IPOPT_FOUND))
        ${PROJECT_SOURCE_DIR}/src/core/solvers/ipopt.cpp)
 endif()
 
+function(project_config directory lib_name)
+  string(TOUPPER ${lib_name} upper_lib_name)
+  generate_configuration_header_v2(
+    INCLUDE_DIR
+    ${PROJECT_BINARY_DIR}/include
+    HEADER_DIR
+    ${directory}
+    FILENAME
+    config.hpp
+    LIBRARY_NAME
+    ${upper_lib_name}
+    EXPORT_SYMBOL
+    ${lib_name}_EXPORTS)
+  # By default DEFINE_SYMBOL add -D${lib_name}_EXPORTS. Don't use
+  # ${lib_name}_EXPORTS define since crocoddyl/config.hpp use crocoddyl_EXPORTS.
+  # This allow to use the same DLLAPI define for all template instantiation
+  # libraries.
+  set_target_properties(${lib_name} PROPERTIES DEFINE_SYMBOL
+                                               "${PROJECT_NAME}_EXPORTS")
+endfunction()
+
 if(UNIX)
   # Build options We'd like to deactivate sign conversion since we frequently
   # convert Eigen::Index<>std::size_t Otherwise, activate all warnings.
@@ -235,6 +299,7 @@ if(UNIX)
                         Boost::serialization)
   target_compile_definitions(
     ${PROJECT_NAME} PUBLIC PINOCCHIO_ENABLE_COMPATIBILITY_WITH_VERSION_2)
+  set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
 
   if(BUILD_WITH_MULTITHREADS)
     target_link_libraries(${PROJECT_NAME} OpenMP::OpenMP_CXX)
@@ -244,6 +309,17 @@ if(UNIX)
     target_link_libraries(${PROJECT_NAME} ipopt)
     target_include_directories(${PROJECT_NAME} PUBLIC ${IPOPT_INCLUDE_DIRS})
   endif()
+
+  project_config(crocoddyl crocoddyl)
+
+  # Added pre-compiled headers
+  target_precompile_headers(
+    ${PROJECT_NAME} PRIVATE
+    ${PROJECT_SOURCE_DIR}/include/crocoddyl/core/pch.hpp
+    ${PROJECT_SOURCE_DIR}/include/crocoddyl/multibody/pch.hpp)
+
+  crocoddyl_generate_cpp_files(${PROJECT_NAME} cpp src ${SCALAR_TYPES})
+  crocoddyl_generate_cpp_files(${PROJECT_NAME} cpp_fptype src ${SCALAR_FPTYPES})
 
   install(
     TARGETS ${PROJECT_NAME}
@@ -263,6 +339,11 @@ if(BUILD_TESTING)
   add_subdirectory(unittest)
 endif()
 
+# Build notebooks
+if(BUILD_PYTHON_INTERFACE)
+  add_subdirectory(notebooks)
+endif()
+
 # Build the benchmark
 if(BUILD_BENCHMARK)
   add_subdirectory(benchmark)
@@ -280,4 +361,6 @@ endif()
 
 # PkgConfig packaging of the project
 pkg_config_append_libs(${PROJECT_NAME})
-pkg_config_append_boost_libs(${BOOST_REQUIRED_COMPONENTS})
+foreach(boostlib ${BOOST_REQUIRED_COMPONENTS})
+  pkg_config_append_libs("boost_${boostlib}")
+endforeach()
