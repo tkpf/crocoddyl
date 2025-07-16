@@ -121,6 +121,11 @@ template <typename Scalar>
 struct ResidualDataControlGravTpl;
 
 template <typename Scalar>
+class ResidualModelControlGravFricTpl;
+template <typename Scalar>
+struct ResidualDataControlGravFricTpl;
+
+template <typename Scalar>
 class ResidualModelFramePlacementTpl;
 template <typename Scalar>
 struct ResidualDataFramePlacementTpl;
@@ -321,6 +326,8 @@ typedef ResidualDataContactControlGravTpl<double>
     ResidualDataContactControlGrav;
 typedef ResidualModelControlGravTpl<double> ResidualModelControlGrav;
 typedef ResidualDataControlGravTpl<double> ResidualDataControlGrav;
+typedef ResidualModelControlGravFricTpl<double> ResidualModelControlGravFric;
+typedef ResidualDataControlGravFricTpl<double> ResidualDataControlGravFric;
 typedef ResidualModelFramePlacementTpl<double> ResidualModelFramePlacement;
 typedef ResidualDataFramePlacementTpl<double> ResidualDataFramePlacement;
 typedef ResidualModelFrameRotationTpl<double> ResidualModelFrameRotation;
